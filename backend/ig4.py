@@ -440,13 +440,16 @@ async def main_wrapper(args):
     print(f"   Output          : output/{stem}.*\n")
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(
+        browser = await p.chromium.launch(
             headless=True,
             args=[
-                "--disable-dev-shm-usage", # Forces Chrome to use main RAM instead of the 64MB partition
-                "--no-sandbox",            # Required for running Chrome inside Docker
-                "--disable-gpu",           # Saves memory by not trying to emulate graphics hardware
-                "--disable-extensions"     # Prevents unnecessary memory usage
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--disable-gpu",
+                "--disable-extensions",
+                # ADD THESE TWO NEW FLAGS:
+                "--disable-setuid-sandbox",
+                "--disable-features=IsolateOrigins,site-per-process" 
             ]
         )
         context = await browser.new_context(
